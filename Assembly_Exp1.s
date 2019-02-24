@@ -158,7 +158,6 @@ REPEAT	SUBS R4, R4, #1
 		EXPORT POWERLED_CONTROL
 
 POWERLED_CONTROL			
-
         PUSH {R4,R5,R6,R14}
 		
 		LDR R4,=PIOA_BASE		; PIOA base address placed in R4
@@ -182,17 +181,18 @@ END_PWRLED
 			
 LED1_CONTROL
         PUSH {R4,R5,R6,R14}
-		LDR R4,=PIOA_BASE		; PIOA base address placed in R4
-		MOV R5,#LED1			; Bit 0 set to 1 for PA1
-		
-		TEQ R0, #1				; If Statement, check if passed param is 1
-		BNE LED_1_NOT_1
-		MOV R5, #0x00			; Move a 0 to bit pos1, This will set USER LED 1 on
+		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
+		MOV R5, #LED1			; Bit 1, for UserLED1
+
+		TST R0, #LED1			; if statement, check if passed param is set to 1
+		BEQ LED1_PARAM_IS_SET	; if 1, send to LED1_NOT_SET
+		BIC R5, R5, #LED1		; Clears bit, on
 		B END_LED1
-LED1_NOT_1
-		MOV R5, #0x01			; Move a 1 to bit pos1, LED is off
+LED1_PARAM_IS_SET
+		ORR R5, R5, #LED1		; Sets LED1 to 1, off
 END_LED1
-		STR R5, [R4, PIO_ODSR]	; Send LED values to Turn LED 1 on or off
+		STR R5,[R4, #PIO_SODR]	; Sets PA1 to a 0 or 1, based on Branching above
+
 		POP {R4,R5,R6,R14}
 		BX R14
 		
@@ -204,17 +204,18 @@ END_LED1
 			
 LED2_CONTROL
         PUSH {R4,R5,R6,R14}
-		LDR R4,=PIOA_BASE		; PIOA base address placed in R4
-		MOV R5,#LED2			; Bit 0 set to 1 for PA2
-		
-		TEQ R0, #1				; If Statement, check if passed param is 1
-		BNE LED2_NOT_1
-		MOV R5, #0x00			; Move a 0 to bit pos2, This will set USER LED 2 on
+		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
+		MOV R5, #LED2			; Bit 1, for UserLED2
+
+		TST R0, #LED2			; if statement, check if passed param is set to 1
+		BEQ LED2_PARAM2_IS_SET	; if 1, send to LED1_NOT_SET
+		BIC R5, R5, #LED1		; Clears bit, on
 		B END_LED2
-LED2_NOT_1
-		MOV R5, #0x02			; Move a 1 to bit pos2, LED is off
+LED2_PARAM_IS_SET
+		ORR R5, R5, #LED2		; Sets LED2 to 1, off
 END_LED2
-		STR R5, [R4, PIO_ODSR]	; Send LED values to Turn LED 2 on or off
+		STR R5,[R4, #PIO_SODR]	; Sets PA2 to a 0 or 1, based on Branching above
+
 		POP {R4,R5,R6,R14}
 		BX R14
 		
@@ -280,16 +281,14 @@ RIGHT_JOYSTICK
 POWER_LED_LOOP
 
         PUSH {R4,R5,R6,R14}
-WHILE_ENDLESS
-		MOV R0, #1
+		MOV R0, #1			; Set POWERLED on, branch to PowerLED with new R0
 		BL POWERLED
-		MOV R0, #500
+		MOV R0, #500		; Delay for 500, branch to DELAY_1MS with new R0
 		BL DELAY_1MS
-		MOV R0, #0
+		MOV R0, #0			; Set POWERLED off, branch to PowerLED with new R0
 		BL POWERLED
-		MOV R0, #500
+		MOV R0, #500		; Delay for 500, branch to DELAY_1MS with new R0
 		BL DELAY_1MS
-		B WHILE_ENDLESS
 		
 		POP {R4,R5,R6,R14}
 		BX R14		

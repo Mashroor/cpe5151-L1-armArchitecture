@@ -61,4 +61,6 @@ Calculation: MCK=(18.432*(25+1))/(5*(1/2))
     20.866ns = 1/47.9232
     1ms = (4* delay_value)*29.866ns
     Solve for delay_value: 1/(4*20.866e-6) = 11981.2
+
+
 */
