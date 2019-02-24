@@ -184,7 +184,7 @@ LED1_CONTROL
 		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
 		MOV R5, #LED1			; Bit 1, for UserLED1
 
-		TST R0, #LED1			; if statement, check if passed param is set to 1
+		TEQ R0, #1			; if statement, check if passed param is set to 1
 		BEQ LED1_PARAM_IS_SET	; if 1, send to LED1_NOT_SET
 		BIC R5, R5, #LED1		; Clears bit, on
 		B END_LED1
@@ -207,7 +207,7 @@ LED2_CONTROL
 		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
 		MOV R5, #LED2			; Bit 1, for UserLED2
 
-		TST R0, #LED2			; if statement, check if passed param is set to 1
+		TSQ R0, #1			; if statement, check if passed param is set to 1
 		BEQ LED2_PARAM2_IS_SET	; if 1, send to LED1_NOT_SET
 		BIC R5, R5, #LED1		; Clears bit, on
 		B END_LED2
