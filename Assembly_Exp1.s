@@ -60,6 +60,7 @@ POWERLED EQU 1<<0				; Set Bit 0 to 1 for POWERLED
 		STR R5,[R4,#PIO_PER]	; Enable PAO as PIO
 		STR R5,[R4,#PIO_OER]	; Enable Output
 		STR R5,[R4,#PIO_MDDR]	; Disable Multi-Drive
+		STR R5,[R4, #PIO_SODR]
 
 		POP {R4,R5,R6,R14}
 		BX R14
@@ -125,11 +126,11 @@ EXT_LEDS EQU 0x0FF
 		MOV R5,#(1<<PIOC_PID)  	; R5=0x10
 		STR R5,[R4,#PMC_PCER]	; Enables PIOC clock
 		LDR R4, =PIOC_BASE		; Reset R4 to Base for PIOC
-		MOVE R5, #EXT_LEDS		; Set bits 0 to 7, for External LEDs
-		STR R5, [R4, #PIO_PER]	; Enable PC0-PC7 to PIO
-		STR R5, [R4, #PIO_OER]	; Enable Output
+		MOV R5, #EXT_LEDS		; Set bits 0 to 7, for External LEDs
+		STR R5,[R4, #PIO_PER]	; Enable PC0-PC7 to PIO
+		STR R5,[R4, #PIO_OER]	; Enable Output
+		STR R5,[R4, #PIO_PUDR]	; Disable Pull Up Resistors
 		STR R5,[R4, #PIO_MDDR]	; Disable Multi-Drive
-
 		STR R5,[R4,#PIO_OWER]	; Set up bits 0-7 to be controlled through ODSR
 
 		POP {R4,R5,R6,R14}
@@ -143,13 +144,15 @@ EXT_LEDS EQU 0x0FF
 			
 DELAY_1MS
         PUSH {R4,R5,R6,R14}
-LOOP	MOV R4, #0x02ECC		;Delay value set from calculations in step 12)
-REPEAT	SUBS R4, R4, #1
+LOOP	MOV R4, #0x2F00			; Delay value set from calculations in step 12
+REPEAT	SUBS R4, R4, #1			; Number is smaller than expected; 12032, opposed to exactly what was in step 12
 		BNE REPEAT
-		SUBS R0, R0, #1			;This is the parameter passed in
+		SUBS R0, R0, #1			; This is the parameter passed in
 		BNE LOOP
 		POP {R4,R5,R6,R14}
 		BX R14	
+								; 22)	Delta T = T1 - T0
+								;		1.01 sec = 2.07 sec - 1.06 sec
 
 ;***********************************************************
 ;    Function: LED Control
@@ -207,8 +210,8 @@ LED2_CONTROL
 		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
 		MOV R5, #LED2			; Bit 1, for UserLED2
 
-		TSQ R0, #1			; if statement, check if passed param is set to 1
-		BEQ LED2_PARAM2_IS_SET	; if 1, send to LED1_NOT_SET
+		TEQ R0, #1			; if statement, check if passed param is set to 1
+		BEQ LED2_PARAM_IS_SET	; if 1, send to LED1_NOT_SET
 		BIC R5, R5, #LED1		; Clears bit, on
 		B END_LED2
 LED2_PARAM_IS_SET
@@ -226,9 +229,40 @@ END_LED2
 			
 COUNTER_FUNCTION
 
+LEFTPB EQU 1<<25
+RIGHTPB EQU 1<<22
+
+DELAY_WAIT EQU 50
+	
         PUSH {R4,R5,R6,R14}
-		NOP     			; REPLACE NOP'S WITH YOUR CODE
-		NOP
+		
+		LDR R4, =PIOB_BASE 	; Read from PDSR
+		LDR R5,[R4, #PIO_PDSR]
+		
+		TST R5, #LEFTPB		; PB25 == 0
+		BNE LEFT_NOT_PRESSED
+		MOV R0, #DELAY_WAIT
+		BL DELAY_1MS		; debounce switch with 50 ms delay
+		TST R5, #LEFTPB		; PB25 ==0
+		BNE LEFT_NOT_PRESSED_DELAY
+		ADD R8, R8, #1		; Increment counter into R8. R8 will serve as my counter 
+
+		BL DISPLAY_FUNCTION	; Link to DISPLAY_FUNCTION
+LEFT_NOT_PRESSED_DELAY		
+LEFT_NOT_PRESSED
+
+		TST R5, #RIGHTPB	; PB22 == 0
+		BNE RIGHT_NOT_PRESSED
+		MOV R0, #DELAY_WAIT
+		BL DELAY_1MS		; debounce switch with 50 ms delay
+		TST R5, #RIGHTPB	; PB22 == 0
+		BNE LEFT_NOT_PRESSED_DELAY
+		SUB R8, R8, #1		; Decrement counter into R8 R8 will serve as my counter 
+
+		BL DISPLAY_FUNCTION	; Link to DISPLAY_FUNCTION
+RIGHT_NOT_PRESSED_DELAY
+RIGHT_NOT_PRESSED
+		
 		POP {R4,R5,R6,R14}
 		BX R14
 
@@ -240,10 +274,12 @@ COUNTER_FUNCTION
 		EXPORT DISPLAY_FUNCTION
 			
 DISPLAY_FUNCTION
-
         PUSH {R4,R5,R6,R14}
-		NOP     			; REPLACE NOP'S WITH YOUR CODE
-		NOP
+		
+		LDR R4, =PIOC_BASE	; Load R4 with Base for PIOC. Then Store R6 value into ODSR of PIOC 
+		MVN R5, R8			; take one's compliment of R0 (parameter passed in) 
+		STR R5,[R4, #PIO_ODSR]	; Store R5 to ODSR for PIOC
+		
 		POP {R4,R5,R6,R14}
 		BX R14
 
@@ -289,6 +325,7 @@ POWER_LED_LOOP
 		BL POWERLED
 		MOV R0, #500		; Delay for 500, branch to DELAY_1MS with new R0
 		BL DELAY_1MS
+
 		
 		POP {R4,R5,R6,R14}
 		BX R14		

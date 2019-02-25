@@ -23,7 +23,8 @@ extern void DELAY_1MS(unsigned int a);
 extern void POWERLED_CONTROL(unsigned int a);
 extern void LED1_CONTROL(unsigned int a);
 extern void LED2_CONTROL(unsigned int a);
-extern void COUNTER_FUNCTION(unsigned int a);
+//extern void COUNTER_FUNCTION(unsigned int a);
+extern void COUNTER_FUNCTION(void);
 extern void DISPLAY_FUNCTION(unsigned int a);
 extern void LEFT_JOYSTICK(void); 
 extern void RIGHT_JOYSTICK(void); 
@@ -43,12 +44,12 @@ int main (void) {
   SWITCH_INIT();
   POWERLED_INIT();
   USER_LEDS_INIT();
-
-
+	
   
   for (;;) {
 		// Endless Loop
-    POWER_LED_LOOP();
+		// POWER_LED_LOOP(); Commented out for next section fo experiment
+		COUNTER_FUNCTION();
    		
   }
 }
@@ -61,6 +62,9 @@ Calculation: MCK=(18.432*(25+1))/(5*(1/2))
     20.866ns = 1/47.9232
     1ms = (4* delay_value)*29.866ns
     Solve for delay_value: 1/(4*20.866e-6) = 11981.2
+
+18) Execution Time at first time at breakpoint: 	 .00481213 sec
+		Execution Time at second time at breakpoint:	1.00915015 sec
 
 
 */
