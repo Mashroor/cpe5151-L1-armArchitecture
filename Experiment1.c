@@ -45,11 +45,11 @@ int main (void) {
 
   
   for (;;) {
-		// Endless Loop
-		// POWER_LED_LOOP(); // Commented out for next section fo experiment
-		// COUNTER_FUNCTION();
-		 MOD_INC_DEC_VALUE();
-	   MOD_COUNTER();
+		//Endless Loop
+		//POWER_LED_LOOP(); // Commented out for next section fo experiment
+		//COUNTER_FUNCTION();
+		MOD_INC_DEC_VALUE();
+	  MOD_COUNTER();
   }
 }
 
@@ -66,6 +66,5 @@ Calculation: MCK=(18.432*(25+1))/(5*(1/2))
 
 18) Execution Time at first time at breakpoint: 	 .00481213 sec
 		Execution Time at second time at breakpoint:	1.00915015 sec
-
 
 */

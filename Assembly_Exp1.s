@@ -19,8 +19,6 @@
 ;*********************************************************************
 		INCLUDE AT91SAM7SE512.INC
 
-
-
 ;*********************************************************************
 ;    VARIABLE DEFINITIONS
 ;*********************************************************************
@@ -38,11 +36,8 @@ VARIABLE_3 DCD 0
 ;***********************************************************
 		PRESERVE8
 
-
 		AREA EXAMPLE,CODE,READONLY
 		ARM
-
-
 
 ;***********************************************************
 ;    Function: Parallel I/O initialization
@@ -55,7 +50,7 @@ POWERLED_INIT
 POWERLED EQU 1<<0				; Set Bit 0 to 1 for POWERLED
 
 		LDR R4,=PMC_BASE		; Enabling Peripheral Clock
-		MOV R5,#(1<<PIOA_PID)  	; R5=0x04
+		MOV R5,#(1<<PIOA_PID)  	; R5 = 0x04
 		STR R5,[R4,#PMC_PCER]	; Enables PIOA clock
 
 		LDR R4, =PIOA_BASE		; Reset R4 to be base for PIOA
@@ -63,11 +58,10 @@ POWERLED EQU 1<<0				; Set Bit 0 to 1 for POWERLED
 		STR R5,[R4,#PIO_PER]	; Enable PAO as PIO
 		STR R5,[R4,#PIO_OER]	; Enable Output
 		STR R5,[R4,#PIO_MDDR]	; Disable Multi-Drive
-		STR R5,[R4, #PIO_SODR]
+		STR R5,[R4, #PIO_SODR]	; Set POWERLED to ON
 
 		POP {R4,R5,R6,R14}
 		BX R14
-		
 ;***********************************************************
 ;    Function: Parallel I/O initialization
 ;
@@ -81,7 +75,7 @@ LED2 EQU 1<<2
 USERLED EQU LED1 :OR: LED2		; Set bits 1, 2 to 1 for both LEDs
 
 		LDR R4,=PMC_BASE		; Enabling Peripheral Clock
-		MOV R5,#(1<<PIOA_PID)  	; R5=0x04
+		MOV R5,#(1<<PIOA_PID)  	; R5 = 0x04
 		STR R5,[R4,#PMC_PCER]	; Enables PIOA clock
 
 		LDR R4, =PIOA_BASE		; Reset R4 to be base for PIOA
@@ -89,11 +83,10 @@ USERLED EQU LED1 :OR: LED2		; Set bits 1, 2 to 1 for both LEDs
 		STR R5,[R4,#PIO_PER]	; Enable PA1 and PA2 as PIO
 		STR R5,[R4,#PIO_OER]	; Enable Output
 		STR R5,[R4,#PIO_MDDR]	; Disable Multi-Drive
-		STR R5, [R4, #PIO_SODR]	; Clear to turn off LED
+		STR R5, [R4, #PIO_SODR]	; Clear to turn off LED at initialization
 
 		POP {R4,R5,R6,R14}
 		BX R14
-		
 ;***********************************************************
 ;    Function: Parallel I/O initialization
 ;
@@ -105,17 +98,17 @@ SWITCH_INIT
 JOYSTICK_SWITCHES EQU 0x0FC00000; This number signifies the bits between 22 and 27 as 1
 		
 		LDR R4,=PMC_BASE		; Enabling Peripheral Clock
-		MOV R5,#(1<<PIOB_PID)  	; R5=0x08
+		MOV R5,#(1<<PIOB_PID)  	; R5 = 0x08
 		STR R5,[R4,#PMC_PCER]	; Enables PIOB clock
-		LDR R4, =PIOB_BASE		; Reset R4 to be base for PIOB
-		MOV R5, #JOYSTICK_SWITCHES		; Set bits 22 to 27, for Joystick and Switches
-		STR R5,[R4,#PIO_PER]	; Enable PB22 - PB27 to PIO
-		STR R5,[R4,#PIO_ODR]	; Disable Output
-		STR R5,[R4,#PIO_PUER]	; Enable Pull up res for PB22-27
+
+		LDR R4, =PIOB_BASE			; Reset R4 to be base for PIOB
+		MOV R5, #JOYSTICK_SWITCHES	; Set bits 22 to 27, for Joystick and Switches
+		STR R5,[R4,#PIO_PER]		; Enable PB22 - PB27 to PIO
+		STR R5,[R4,#PIO_ODR]		; Disable Output
+		STR R5,[R4,#PIO_PUER]		; Enable Pull up res for PB22-27
 
 		POP {R4,R5,R6,R14}
-		BX R14
-		
+		BX R14	
 ;***********************************************************
 ;    Function: Parallel I/O initialization
 ;
@@ -127,7 +120,7 @@ EXT_LEDS_INIT
 EXT_LEDS EQU 0x0FF				; This value signifies the bits 0 to 7 as 1's
 
 		LDR R4,=PMC_BASE		; Enabling Peripheral Clock
-		MOV R5,#(1<<PIOC_PID)  	; R5=0x10
+		MOV R5,#(1<<PIOC_PID)  	; R5 = 0x10
 		STR R5,[R4,#PMC_PCER]	; Enables PIOC clock
 		
 		LDR R4, =PIOC_BASE		; Reset R4 to Base for PIOC
@@ -137,11 +130,10 @@ EXT_LEDS EQU 0x0FF				; This value signifies the bits 0 to 7 as 1's
 
 		STR R5,[R4, #PIO_MDDR]	; Disable Multi-Drive
 		STR R5,[R4, #PIO_OWER]	; Set up bits 0-7 to be controlled through ODSR
-		STR R5,[R4, #PIO_ODSR] ; Turn off on initialization
+		STR R5,[R4, #PIO_ODSR]	; Turn off all LEDs on initialization
 
 		POP {R4,R5,R6,R14}
-		BX R14
-		
+		BX R14	
 ;***********************************************************
 ;    Function: Delay Function
 ;
@@ -159,7 +151,6 @@ REPEAT	SUBS R4, R4, #1			; Number is smaller than expected; 12032, opposed to ex
 		BX R14	
 								; 22)	Delta T = T1 - T0
 								;		1.01 sec = 2.07 sec - 1.06 sec
-
 ;***********************************************************
 ;    Function: LED Control
 ;
@@ -168,7 +159,6 @@ REPEAT	SUBS R4, R4, #1			; Number is smaller than expected; 12032, opposed to ex
 
 POWERLED_CONTROL			
         PUSH {R4,R5,R6,R14}
-		
 		LDR R4,=PIOA_BASE		; PIOA base address placed in R4
 		MOV R5,#POWERLED		; Bit 0 set to 1 for PA0 (power LED)
 
@@ -181,7 +171,6 @@ NOT_1
 END_PWRLED
 		POP {R4,R5,R6,R14}
 		BX R14
-		
 ;***********************************************************
 ;    Function: LED Control
 ;
@@ -193,17 +182,16 @@ LED1_CONTROL
 		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
 		MOV R5, #LED1			; Bit 1, for UserLED1
 
-		TEQ R0, #0			; if statement, check if passed param is set to 0
-		BEQ LED1_PARAM_IS_SET	; if 1, send to LED1_NOT_SET
-		STR R5,[R4, #PIO_CODR]
+		TEQ R0, #0				; If statement, check if passed param is set to 0
+		BEQ LED1_PARAM_IS_SET	; If 1, send to LED1_NOT_SET
+		STR R5,[R4, #PIO_CODR]	; Turn ON LED1
 		B END_LED1
 LED1_PARAM_IS_SET
-		STR R5,[R4, #PIO_SODR]
+		STR R5,[R4, #PIO_SODR]	; Turn OFF LED1
 END_LED1
 
 		POP {R4,R5,R6,R14}
 		BX R14
-		
 ;***********************************************************
 ;    Function: LED Control
 ;
@@ -215,18 +203,16 @@ LED2_CONTROL
 		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
 		MOV R5, #LED2			; Bit 1, for UserLED2
 
-		TEQ R0, #0				; if statement, check if passed param is set to 0
-		BEQ LED2_PARAM_IS_SET	; if 1, send to LED2_NOT_SET
-		STR R5, [R4, #PIO_CODR]
+		TEQ R0, #0				; If statement, check if passed param is set to 0
+		BEQ LED2_PARAM_IS_SET	; If 1, send to LED2_NOT_SET
+		STR R5, [R4, #PIO_CODR]	; Turn ON LED2
 		B END_LED2
 LED2_PARAM_IS_SET
-		STR R5,[R4, #PIO_SODR]
+		STR R5,[R4, #PIO_SODR]	; Turn OFF LED2
 END_LED2
 		
-
 		POP {R4,R5,R6,R14}
-		BX R14
-		
+		BX R14	
 ;*************************************************************
 ;    Function: Counter Function using switch inputs
 ;*************************************************************
@@ -236,30 +222,28 @@ COUNTER_FUNCTION
 
 LEFTPB EQU 1<<25
 RIGHTPB EQU 1<<22
-
 DELAY_WAIT EQU 50
 	
         PUSH {R4,R5,R6,R14}
-		
 		LDR R4, =PIOB_BASE 	; Read from PDSR
 		LDR R5,[R4, #PIO_PDSR]
-		
+							; Increment statement
 		TST R5, #LEFTPB		; PB25 == 0
 		BNE LEFT_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
 		BL DELAY_1MS		; debounce switch with 50 ms delay
-		TST R5, #LEFTPB		; PB25 ==0
+		TST R5, #LEFTPB		; PB25 == 0
 		BNE LEFT_NOT_PRESSED_DELAY
 		ADD R8, R8, #1		; Increment counter into R8. R8 will serve as my counter 
 		MOV R0, R8			; Move counter to passed param
 		BL DISPLAY_FUNCTION	; Link to DISPLAY_FUNCTION
 LEFT_NOT_PRESSED_DELAY		
 LEFT_NOT_PRESSED
-
+							; Decrement statement
 		TST R5, #RIGHTPB	; PB22 == 0
 		BNE RIGHT_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS		; debounce switch with 50 ms delay
+		BL DELAY_1MS		; Debounce switch with 50 ms delay
 		TST R5, #RIGHTPB	; PB22 == 0
 		BNE RIGHT_NOT_PRESSED_DELAY
 		SUB R8, R8, #1		; Decrement counter into R8 R8 will serve as my counter 
@@ -270,22 +254,20 @@ RIGHT_NOT_PRESSED
 		
 		POP {R4,R5,R6,R14}
 		BX R14
-
 ;*************************************************************
 ;    Function: Display Function using switch inputs
 ;*************************************************************
 		EXPORT DISPLAY_FUNCTION
 			
 DISPLAY_FUNCTION
-        PUSH {R4,R5,R6,R14}
-		
-		LDR R4, =PIOC_BASE	; Load R4 with Base for PIOC. Then Store R6 value into ODSR of PIOC 
-		MVN R5, R0			; Take one's compliment of R8 (counter) 
+        
+		PUSH {R4,R5,R6,R14}
+		LDR R4, =PIOC_BASE		; Load R4 with Base for PIOC. Then Store R6 value into ODSR of PIOC 
+		MVN R5, R0				; Take one's compliment of R8 (counter) 
 		STR R5,[R4, #PIO_ODSR]	; Store R5 to ODSR for PIOC
 		
 		POP {R4,R5,R6,R14}
 		BX R14
-
 ;*************************************************************
 ;    Function: Power LED control loop
 ;*************************************************************
@@ -303,10 +285,8 @@ POWER_LED_LOOP
 		MOV R0, #500		; Delay for 500, branch to DELAY_1MS with new R0
 		BL DELAY_1MS
 
-		
 		POP {R4,R5,R6,R14}
 		BX R14		
-
 ;*************************************************************
 ;    Function: Modify Increment/Decrement Value
 ;*************************************************************
@@ -319,10 +299,8 @@ DOWN_JOYSTICK EQU 1<<24
 RIGHT_JOYSTICK EQU 1<<26
 LEFT_JOYSTICK EQU 1<<27
 	
-        PUSH {R4,R5,R6,R14}
-		
-		
-		LDR R4, =PIOB_BASE 	; Read from PDSR
+        PUSH {R4,R5,R6,R14}	
+		LDR R4, =PIOB_BASE 		; Read from PDSR
 		LDR R5,[R4, #PIO_PDSR]
 		
 		TST R5, #LEFT_JOYSTICK	; PB27 == 0
@@ -337,7 +315,6 @@ LEFT_JOYSTICK_NOT_PRESSED
 		
 		POP {R4,R5,R6,R14}
 		BX R14
-		
 ;*************************************************************
 ;    Function: Modify Increment Value
 ;*************************************************************
@@ -347,8 +324,7 @@ MOD_INC_VALUE
 WHILE_LOOP_TRUE EQU 0x01
 WHILE_LOOP_FALSE EQU 0x00
 	
-        PUSH {R4,R5,R6,R14}
-		
+        PUSH {R4,R5,R6,R14}	
 		MOV R0, #1			; Set Param to 1
 		BL LED1_CONTROL		; Turn on LED1
 		
@@ -361,38 +337,34 @@ START_DO_LOOP
 		LDR R5,[R4, #PIO_PDSR]
 		
 		MOV R11, #WHILE_LOOP_TRUE	; Set while loop condition to true as long as in loop
-
-		TST R5, #UP_JOYSTICK	;PB23 == 0
+									; Inc Value increase
+		TST R5, #UP_JOYSTICK		; PB23 == 0
 		BNE UP_JOYSTICK_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS		; Debounce Delay
-		TST R5, #UP_JOYSTICK	;PB23 == 0
+		BL DELAY_1MS				; Debounce Delay
+		TST R5, #UP_JOYSTICK		; PB23 == 0
 		BNE UP_JOYSTICK_NOT_PRESSED_DELAY
-		
-		ADD R9, R9, #1		; Increment Inc value
-		
-		CMP R9, #16			; if R9 > 16
+		ADD R9, R9, #1				; Increment Inc value
+		CMP R9, #16					; If R9 > 16
 		BLS LOWER_16
-		MOV R9, #16			; Set to 16 of >16
+		MOV R9, #16					; Set to 16 of >16
 LOWER_16
 UP_JOYSTICK_NOT_PRESSED_DELAY
 UP_JOYSTICK_NOT_PRESSED
 
 		MOV R0, #DELAY_WAIT
 		BL DELAY_1MS		; Debounce Delay
-
-		TST R5, #DOWN_JOYSTICK	;PB24 == 0
+									: Inc Value decrease
+		TST R5, #DOWN_JOYSTICK		; PB24 == 0
 		BNE DOWN_JOYSTICK_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS		; Debounce Delay
-		TST R5, #DOWN_JOYSTICK	;PB24 == 0
+		BL DELAY_1MS				; Debounce Delay
+		TST R5, #DOWN_JOYSTICK		; PB24 == 0
 		BNE DOWN_JOYSTICK_NOT_PRESSED_DELAY
-		
-		SUB R9, R9, #1		; Decrement value
-		
-		TEQ R9, #0			; if R10 == 0
+		SUB R9, R9, #1				; Decrement value
+		TEQ R9, #0					; If R10 == 0
 		BNE EQUALS_0
-		MOV R9, #1			; Set to 16 of >16
+		MOV R9, #1					; Set to 16 of >16
 EQUALS_0
 DOWN_JOYSTICK_NOT_PRESSED_DELAY
 DOWN_JOYSTICK_NOT_PRESSED
@@ -400,10 +372,10 @@ DOWN_JOYSTICK_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
 		BL DELAY_1MS		; Debounce Delay
 
-		MOV R0, R9			; Move Inc amount to passed param
-		BL DISPLAY_FUNCTION	; Link to DISPLAY_FUNCTION
-		
-		TST R5, #LEFT_JOYSTICK	; PB27 == 0
+		MOV R0, R9					; Move Inc amount to passed param
+		BL DISPLAY_FUNCTION			; Link to DISPLAY_FUNCTION
+									; Quit inc loop
+		TST R5, #LEFT_JOYSTICK		; PB27 == 0
 		BNE LEFT_JOYSTICK_NOT_PRESSED_EXIT
 		MOV R0, #DELAY_WAIT
 		BL DELAY_1MS
@@ -417,16 +389,13 @@ LEFT_JOYSTICK_NOT_PRESSED_EXIT
 		BL DELAY_1MS		; Debounce Delay
 
 		TEQ R11, #WHILE_LOOP_FALSE	; Check condition True/false
-		BNE START_DO_LOOP	; Branch to start of Do while
-		
-		MOV R10, R9			; R10 will have the final increment value, from R9
-		
-		MOV R0, #0			; Set Param to 1
-		BL LED1_CONTROL		; Turn on LED1
+		BNE START_DO_LOOP			; Branch to start of Do while
+		MOV R10, R9					; R10 will have the final increment value, from R9
+		MOV R0, #0					; Set Param to 1
+		BL LED1_CONTROL				; Turn on LED1
 		
 		POP {R4,R5,R6,R14}
 		BX R14		
-	
 ;*************************************************************
 ;    Function: Modified Counter Function
 ;*************************************************************
@@ -434,15 +403,14 @@ LEFT_JOYSTICK_NOT_PRESSED_EXIT
 			
 MOD_COUNTER
 
-        PUSH {R4,R5,R6,R14}
-		
+        PUSH {R4,R5,R6,R14}	
 		LDR R4, =PIOB_BASE 	; Read from PDSR
 		LDR R5,[R4, #PIO_PDSR]
-		
+							; Increment statement
 		TST R5, #LEFTPB		; PB25 == 0
 		BNE MOD_LEFT_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS		; debounce switch with 50 ms delay
+		BL DELAY_1MS		; Debounce switch with 50 ms delay
 		TST R5, #LEFTPB		; PB25 ==0
 		BNE MOD_LEFT_NOT_PRESSED_DELAY
 		ADD R8, R8, R10		; Increment counter into R8. R10 is the new value for decrement
@@ -450,7 +418,7 @@ MOD_COUNTER
 		BL DISPLAY_FUNCTION	; Link to DISPLAY_FUNCTION
 MOD_LEFT_NOT_PRESSED_DELAY		
 MOD_LEFT_NOT_PRESSED
-
+							; Decrement statement
 		TST R5, #RIGHTPB	; PB22 == 0
 		BNE MOD_RIGHT_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
@@ -465,7 +433,6 @@ MOD_RIGHT_NOT_PRESSED
 
 		POP {R4,R5,R6,R14}
 		BX R14
-
 ;*************************************************************
 ;    Function: Modified Counter Function
 ;*************************************************************
@@ -474,12 +441,10 @@ MOD_RIGHT_NOT_PRESSED
 SET_COUNTERS
 
         PUSH {R4,R5,R6,R14}
-							; Initialize the counters for any counter and modifications
 		MOV R10, #1			; Initialize final inc/dec register to 1
 		MOV R9, #1			; initialize temp inc/dec register to 1	
 		
 		POP {R4,R5,R6,R14}
-		BX R14
-		
+		BX R14	
 		
 		END
