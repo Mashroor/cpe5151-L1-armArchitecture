@@ -9,8 +9,11 @@
 ;        The do-nothing functions are program stubs that the student
 ;        can use as a starting point for their solution.
 ;*********************************************************************
-;    Code written by: Roger Younger
+;    Code template written by: Roger Younger
 ;    v1.0 Released: Feb. 9, 2017
+;
+;	Code written by: Mashroor Rashid
+;	Date: Feb. 25, 2019
 ;*********************************************************************
 ;    CONSTANT DEFINITIONS
 ;*********************************************************************
@@ -99,7 +102,7 @@ USERLED EQU LED1 :OR: LED2		; Set bits 1, 2 to 1 for both LEDs
 			
 SWITCH_INIT
         PUSH {R4,R5,R6,R14}
-JOYSTICK_SWITCHES EQU 0x0FC00000
+JOYSTICK_SWITCHES EQU 0x0FC00000; This number signifies the bits between 22 and 27 as 1
 		
 		LDR R4,=PMC_BASE		; Enabling Peripheral Clock
 		MOV R5,#(1<<PIOB_PID)  	; R5=0x08
@@ -121,7 +124,7 @@ JOYSTICK_SWITCHES EQU 0x0FC00000
 			
 EXT_LEDS_INIT
         PUSH {R4,R5,R6,R14}
-EXT_LEDS EQU 0x0FF
+EXT_LEDS EQU 0x0FF				; This value signifies the bits 0 to 7 as 1's
 
 		LDR R4,=PMC_BASE		; Enabling Peripheral Clock
 		MOV R5,#(1<<PIOC_PID)  	; R5=0x10
@@ -211,7 +214,7 @@ LED2_CONTROL
 		LDR R4, =PIOA_BASE		; PIOA base address, for storing/loading
 		MOV R5, #LED2			; Bit 1, for UserLED2
 
-		TEQ R0, #0			; if statement, check if passed param is set to 0
+		TEQ R0, #0				; if statement, check if passed param is set to 0
 		BEQ LED2_PARAM_IS_SET	; if 1, send to LED2_NOT_SET
 		STR R5, [R4, #PIO_CODR]
 		B END_LED2
@@ -317,8 +320,6 @@ LEFT_JOYSTICK EQU 1<<27
 	
         PUSH {R4,R5,R6,R14}
 		
-		MOV R10, #1	; Initialize final inc/dec register to 1
-		MOV R9, #1	; initialize temp inc/dec register to 1
 		
 		LDR R4, =PIOB_BASE 	; Read from PDSR
 		LDR R5,[R4, #PIO_PDSR]
@@ -347,11 +348,11 @@ WHILE_LOOP_FALSE EQU 0x00
 	
         PUSH {R4,R5,R6,R14}
 		
-		MOV R0, #1		; Set Param to 1
-		BL LED1_CONTROL	; Turn on LED1
+		MOV R0, #1			; Set Param to 1
+		BL LED1_CONTROL		; Turn on LED1
 		
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS	; Debounce Delay, to allow user to let go of stick
+		BL DELAY_1MS		; Debounce Delay, to allow user to let go of stick
 		
 		LDR R4, =PIOB_BASE 	; Read from PDSR
 		LDR R5,[R4, #PIO_PDSR]
@@ -363,7 +364,7 @@ START_DO_LOOP
 		TST R5, #UP_JOYSTICK	;PB23 == 0
 		BNE UP_JOYSTICK_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS	; Debounce Delay
+		BL DELAY_1MS		; Debounce Delay
 		TST R5, #UP_JOYSTICK	;PB23 == 0
 		BNE UP_JOYSTICK_NOT_PRESSED_DELAY
 		
@@ -379,7 +380,7 @@ UP_JOYSTICK_NOT_PRESSED
 		TST R5, #DOWN_JOYSTICK	;PB23 == 0
 		BNE DOWN_JOYSTICK_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS	; Debounce Delay
+		BL DELAY_1MS		; Debounce Delay
 		TEQ R5, #DOWN_JOYSTICK	;PB23 == 0
 		BNE DOWN_JOYSTICK_NOT_PRESSED_DELAY
 		
@@ -406,13 +407,13 @@ LEFT_JOYSTICK_NOT_PRESSED_DELAY_EXIT
 LEFT_JOYSTICK_NOT_PRESSED_EXIT
 									; While(true)
 		TEQ R11, #WHILE_LOOP_FALSE	; Check condition True/false
-		BNE START_DO_LOOP			; Branch to start of Do while
+		BNE START_DO_LOOP	; Branch to start of Do while
 		
-		MOV R10, R9					; R10 will have the final increment value, from R9
+		MOV R10, R9			; R10 will have the final increment value, from R9
 		
 		POP {R4,R5,R6,R14}
 		BX R14		
-		
+	
 ;*************************************************************
 ;    Function: Modified Counter Function
 ;*************************************************************
@@ -449,11 +450,22 @@ MOD_LEFT_NOT_PRESSED
 MOD_RIGHT_NOT_PRESSED_DELAY
 MOD_RIGHT_NOT_PRESSED
 
-
 		POP {R4,R5,R6,R14}
 		BX R14
 
+;*************************************************************
+;    Function: Modified Counter Function
+;*************************************************************
+		EXPORT SET_COUNTERS
+			
+SET_COUNTERS
 
-
+        PUSH {R4,R5,R6,R14}
+							; Initialize the counters for any counter and modifications
+		MOV R10, #1			; Initialize final inc/dec register to 1
+		MOV R9, #1			; initialize temp inc/dec register to 1	
+		
+		POP {R4,R5,R6,R14}
+		BX R14
 
 		END

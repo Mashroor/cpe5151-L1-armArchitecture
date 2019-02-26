@@ -23,15 +23,13 @@ extern void DELAY_1MS(unsigned int a);
 extern void POWERLED_CONTROL(unsigned int a);
 extern void LED1_CONTROL(unsigned int a);
 extern void LED2_CONTROL(unsigned int a);
-//extern void COUNTER_FUNCTION(unsigned int a);
 extern void COUNTER_FUNCTION(void);
 extern void DISPLAY_FUNCTION(unsigned int a);
 extern void POWER_LED_LOOP(void);
 extern void MOD_INC_DEC_VALUE(void);
 extern void MOD_COUNTER(void);
+extern void SET_COUNTERS(void);
 
-
- 
 /*
  * Main Program
  */
@@ -43,20 +41,21 @@ int main (void) {
   POWERLED_INIT();
   USER_LEDS_INIT();
 	EXT_LEDS_INIT();
+  SET_COUNTERS();
 
   
   for (;;) {
 		// Endless Loop
 		// POWER_LED_LOOP(); // Commented out for next section fo experiment
 		// COUNTER_FUNCTION();
-		MOD_INC_DEC_VALUE();
-	  // MOD_COUNTER();
-
-   		
+		// MOD_INC_DEC_VALUE();
+	  MOD_COUNTER();
   }
 }
 
 /*
+Lab Questions
+-------------------------------------------------------------------------------
 7)  DIV = 0x05  MUL = 0x0019  MCK = 47.9232 MHz
 Calculation: MCK=(18.432*(25+1))/(5*(1/2))
 
