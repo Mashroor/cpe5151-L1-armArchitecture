@@ -351,18 +351,22 @@ WHILE_LOOP_FALSE EQU 0x00
 		BL LED1_CONTROL	; Turn on LED1
 		
 		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS	; Debounce Delay
+		BL DELAY_1MS	; Debounce Delay, to allow user to let go of stick
 		
 		LDR R4, =PIOB_BASE 	; Read from PDSR
 		LDR R5,[R4, #PIO_PDSR]
 		
 START_DO_LOOP
+		
+		MOV R11, #WHILE_LOOP_TRUE	; Set while loop condition to true as long as in loop
+
 		TST R5, #UP_JOYSTICK	;PB23 == 0
 		BNE UP_JOYSTICK_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
 		BL DELAY_1MS	; Debounce Delay
 		TST R5, #UP_JOYSTICK	;PB23 == 0
 		BNE UP_JOYSTICK_NOT_PRESSED_DELAY
+		
 		ADD R9, R9, #1		; Increment Inc value
 		
 		CMP R9, #16			; if R9 > 16
@@ -378,6 +382,7 @@ UP_JOYSTICK_NOT_PRESSED
 		BL DELAY_1MS	; Debounce Delay
 		TEQ R5, #DOWN_JOYSTICK	;PB23 == 0
 		BNE DOWN_JOYSTICK_NOT_PRESSED_DELAY
+		
 		SUB R9, R9, #1		; Decrement value
 		
 		TST R9, #0			; if R10 == 0
@@ -399,11 +404,11 @@ DOWN_JOYSTICK_NOT_PRESSED
 		MOV R11, #WHILE_LOOP_FALSE
 LEFT_JOYSTICK_NOT_PRESSED_DELAY_EXIT
 LEFT_JOYSTICK_NOT_PRESSED_EXIT
-		
-		TEQ R11, #WHILE_LOOP_FALSE	; Check condition
+									; While(true)
+		TEQ R11, #WHILE_LOOP_FALSE	; Check condition True/false
 		BNE START_DO_LOOP			; Branch to start of Do while
 		
-		MOV R10, R9					; R10 will have the final increment value
+		MOV R10, R9					; R10 will have the final increment value, from R9
 		
 		POP {R4,R5,R6,R14}
 		BX R14		

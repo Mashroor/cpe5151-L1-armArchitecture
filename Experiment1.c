@@ -50,7 +50,7 @@ int main (void) {
 		// POWER_LED_LOOP(); // Commented out for next section fo experiment
 		// COUNTER_FUNCTION();
 		MOD_INC_DEC_VALUE();
-	//	MOD_COUNTER();
+	  // MOD_COUNTER();
 
    		
   }
