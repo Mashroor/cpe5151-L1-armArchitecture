@@ -1,0 +1,6 @@
+Dependencies for Project 'Lab1Proj', Target 'Target 1': (DO NOT MODIFY !)
+F (.\SAM7.s)(0x5C742DCC)(--cpu ARM7TDMI --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\KeilARM\ARM\RV31\INC-I C:\KeilARM\ARM\CMSIS\Include-I C:\KeilARM\ARM\Inc\Atmel\SAM7SE--list .\sam7.lst --xref -o .\sam7.o --depend .\sam7.d)
+F (.\Experiment1.c)(0x5C75894B)(-c --cpu ARM7TDMI -D__EVAL -g -O0 --apcs=interwork -I C:\KeilARM\ARM\RV31\INC-I C:\KeilARM\ARM\CMSIS\Include-I C:\KeilARM\ARM\Inc\Atmel\SAM7SE-o .\experiment1.o --omf_browse .\experiment1.crf --depend .\experiment1.d)
+I (C:\KeilARM\ARM\Inc\Atmel\SAM7SE\AT91SAM7SE512.H)(0x520A52F8)
+I (AT91SAM7SE-EK.h)(0x5C756CE6)
+F (.\Assembly_Exp1.s)(0x5C758949)(--cpu ARM7TDMI --pd "__EVAL SETA 1" -g --apcs=interwork -I C:\KeilARM\ARM\RV31\INC-I C:\KeilARM\ARM\CMSIS\Include-I C:\KeilARM\ARM\Inc\Atmel\SAM7SE--list .\assembly_exp1.lst --xref -o .\assembly_exp1.o --depend .\assembly_exp1.d)

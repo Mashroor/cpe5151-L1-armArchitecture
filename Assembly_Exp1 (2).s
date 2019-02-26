@@ -137,7 +137,6 @@ EXT_LEDS EQU 0x0FF				; This value signifies the bits 0 to 7 as 1's
 
 		STR R5,[R4, #PIO_MDDR]	; Disable Multi-Drive
 		STR R5,[R4, #PIO_OWER]	; Set up bits 0-7 to be controlled through ODSR
-		STR R5,[R4, #PIO_ODSR] ; Turn off on initialization
 
 		POP {R4,R5,R6,R14}
 		BX R14
@@ -344,7 +343,7 @@ LEFT_JOYSTICK_NOT_PRESSED
 			
 MOD_INC_VALUE
 
-WHILE_LOOP_TRUE EQU 0x01
+WHILE_LOOP_TRUE EQU 0xFF
 WHILE_LOOP_FALSE EQU 0x00
 	
         PUSH {R4,R5,R6,R14}
@@ -355,10 +354,10 @@ WHILE_LOOP_FALSE EQU 0x00
 		MOV R0, #DELAY_WAIT
 		BL DELAY_1MS		; Debounce Delay, to allow user to let go of stick
 		
-START_DO_LOOP
-		
 		LDR R4, =PIOB_BASE 	; Read from PDSR
 		LDR R5,[R4, #PIO_PDSR]
+		
+START_DO_LOOP
 		
 		MOV R11, #WHILE_LOOP_TRUE	; Set while loop condition to true as long as in loop
 
@@ -378,27 +377,21 @@ LOWER_16
 UP_JOYSTICK_NOT_PRESSED_DELAY
 UP_JOYSTICK_NOT_PRESSED
 
-		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS		; Debounce Delay
-
-		TST R5, #DOWN_JOYSTICK	;PB24 == 0
+		TST R5, #DOWN_JOYSTICK	;PB23 == 0
 		BNE DOWN_JOYSTICK_NOT_PRESSED
 		MOV R0, #DELAY_WAIT
 		BL DELAY_1MS		; Debounce Delay
-		TST R5, #DOWN_JOYSTICK	;PB24 == 0
+		TEQ R5, #DOWN_JOYSTICK	;PB23 == 0
 		BNE DOWN_JOYSTICK_NOT_PRESSED_DELAY
 		
 		SUB R9, R9, #1		; Decrement value
 		
-		TEQ R9, #0			; if R10 == 0
+		TST R9, #0			; if R10 == 0
 		BNE EQUALS_0
 		MOV R9, #1			; Set to 16 of >16
 EQUALS_0
 DOWN_JOYSTICK_NOT_PRESSED_DELAY
 DOWN_JOYSTICK_NOT_PRESSED
-
-		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS		; Debounce Delay
 
 		MOV R0, R9			; Move Inc amount to passed param
 		BL DISPLAY_FUNCTION	; Link to DISPLAY_FUNCTION
@@ -409,20 +402,14 @@ DOWN_JOYSTICK_NOT_PRESSED
 		BL DELAY_1MS
 		TST R5, #LEFT_JOYSTICK
 		BNE LEFT_JOYSTICK_NOT_PRESSED_DELAY_EXIT
-		MOV R11, #WHILE_LOOP_FALSE	; Set Exit
+		MOV R11, #WHILE_LOOP_FALSE
 LEFT_JOYSTICK_NOT_PRESSED_DELAY_EXIT
 LEFT_JOYSTICK_NOT_PRESSED_EXIT
-
-		MOV R0, #DELAY_WAIT
-		BL DELAY_1MS		; Debounce Delay
-
+									; While(true)
 		TEQ R11, #WHILE_LOOP_FALSE	; Check condition True/false
 		BNE START_DO_LOOP	; Branch to start of Do while
 		
 		MOV R10, R9			; R10 will have the final increment value, from R9
-		
-		MOV R0, #0			; Set Param to 1
-		BL LED1_CONTROL		; Turn on LED1
 		
 		POP {R4,R5,R6,R14}
 		BX R14		
@@ -480,6 +467,5 @@ SET_COUNTERS
 		
 		POP {R4,R5,R6,R14}
 		BX R14
-		
-		
+
 		END
