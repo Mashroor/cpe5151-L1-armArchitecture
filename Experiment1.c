@@ -26,11 +26,9 @@ extern void LED2_CONTROL(unsigned int a);
 //extern void COUNTER_FUNCTION(unsigned int a);
 extern void COUNTER_FUNCTION(void);
 extern void DISPLAY_FUNCTION(unsigned int a);
-extern void LEFT_JOYSTICK(void); 
-extern void RIGHT_JOYSTICK(void); 
-extern void POWER_LED_LOOP(void); 
-
-
+extern void POWER_LED_LOOP(void);
+extern void MOD_INC_DEC_VALUE(void);
+extern void MOD_COUNTER(void);
 
 
  
@@ -44,12 +42,16 @@ int main (void) {
   SWITCH_INIT();
   POWERLED_INIT();
   USER_LEDS_INIT();
-	
+	EXT_LEDS_INIT();
+
   
   for (;;) {
 		// Endless Loop
-		// POWER_LED_LOOP(); Commented out for next section fo experiment
-		COUNTER_FUNCTION();
+		// POWER_LED_LOOP(); // Commented out for next section fo experiment
+		// COUNTER_FUNCTION();
+		MOD_INC_DEC_VALUE();
+	//	MOD_COUNTER();
+
    		
   }
 }
